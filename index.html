@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Ramco | سیستم حسابداری و انبارداری کارگاه تولید کابل رامکو</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet"
+        type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+    <link rel="stylesheet" href="style_premium.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <h2>رامکو</h2>
+            <span> Ramco Cable </span>
+        </div>
+        <nav>
+            <ul>
+                <li data-page="dashboard" class="active"><span>📊</span> داشبورد</li>
+                <li data-page="products"><span>📦</span> انبار (محصولات)</li>
+                <li data-page="customers"><span>👥</span> اشخاص</li>
+                <li data-page="ledger"><span>📋</span><i class="fas fa-book"></i> حساب معین</li>
+                <li data-page="create-invoice"><span>📝</span> صدور فاکتور</li>
+                <li data-page="purchases"><span>📦</span> ثبت خرید کالا</li>
+                <li data-page="purchase-history"><span>⌛</span>سابقه خرید</li>
+                <li data-page="invoices"><span>📎</span> لیست فاکتورها</li>
+                <li data-page="workers"><span>👷</span> کارگران</li>
+                <li data-page="salaries"><span>💰</span> حقوق و دستمزد</li>
+                <li data-page="checks"><span>🏦</span> مدیریت چک‌ها</li><span id="checks-alert" class="checks-alert"
+                    style="display:none;">0</span>
+                <li data-page="profits"><span>💰</span><i class="fas fa-chart-line"></i><span>سود</span></li>
+                <li data-page="expenses"><span>💷</span><i class="fas fa-money-bill-wave"></i><span>هزینه‌ها</span></li>
+                <li data-page="reports"><span>📊</span><i class="fas fa-chart-line"></i><span> گزارشات</span></li>
+                <li data-page="backup"><span>💾</span> بک‌آپ</li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+
+        <!-- Dashboard Page -->
+        <section id="page-dashboard" class="page active">
+            <h1 class="page-title">داشبورد</h1>
+            <div class="cards-grid">
+                <div class="card card-blue">
+                    <h3>تعداد محصولات</h3>
+                    <p id="stat-products">0</p>
+                </div>
+                <div class="card card-green">
+                    <h3>تعداد اشخاص مرتبط</h3>
+                    <p id="stat-customers">0</p>
+                </div>
+                <div class="card card-orange">
+                    <h3>کل فروش دوره</h3>
+                    <p id="stat-sales">0</p>
+                </div>
+                <div class="card card-red">
+                    <h3>جمع بدهی مشتریان</h3>
+                    <p id="stat-customer-debts">0</p>
+                </div>
+
+                <div class="card card-blue">
+                    <h3>جمع طلب فروشندگان</h3>
+                    <p id="stat-supplier-debts">0</p>
+                </div>
+
+                <div class="card card-blue">
+                    <h3>فروش ماه جاری</h3>
+                    <p id="stat-sale-month">0</p>
+                </div>
+
+                <div class="card card-orange">
+                    <h3>بهای تمام شده ماه جاری</h3>
+                    <p id="stat-cost-month">0</p>
+                </div>
+
+                <div class="card card-red">
+                    <h3>سود ناخالص ماه جاری</h3>
+                    <p id="stat-gross-month">0</p>
+                </div>
+
+                <div class="card card-red">
+                    <h3>هزینه های ماه جاری</h3>
+                    <p id="stat-expense-month">0</p>
+                </div>
+
+                <div class="card card-green">
+                    <h3>سود خالص ماه جاری</h3>
+                    <p id="stat-profit-month">0</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Products Page -->
+        <section id="page-products" class="page">
+            <h1 class="page-title">مدیریت انبار و محصولات</h1>
+            <div class="form-container">
+                <input type="hidden" id="edit-product-id">
+                <div class="form-group"><label>نام محصول</label><input type="text" id="p-name" required></div>
+                <div class="form-group"><label>واحد</label>
+                    <select id="p-unit">
+                        <option value="متر">متر</option>
+                        <option value="کیلوگرم">کیلوگرم</option>
+                        <option value="تعداد">تعداد</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>قیمت خرید / ساخت (تومان)</label>
+                    <input type="number" id="p-cost-price" min="0" step="100">
+                </div>
+
+                <div class="form-group">
+                    <label>قیمت فروش (تومان)</label>
+                    <input type="number" id="p-sell-price" min="0" step="100">
+                </div>
+                <div class="form-group"><label>موجودی</label><input type="number" id="p-stock" min="0"></div>
+                <div class="form-group"><label>نوع</label>
+                    <select id="p-type">
+                        <option value="محصول_نهایی">محصول نهایی</option>
+                        <option value="مواد_اولیه">مواد اولیه</option>
+                    </select>
+                </div>
+                <button id="btn-save-product" class="btn btn-primary">ذخیره محصول</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>نام محصول</th>
+                        <th>واحد</th>
+                        <th>قیمت خرید</th>
+                        <th>قیمت فروش</th>
+                        <th>موجودی</th>
+                        <th>نوع</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="products-tbody"></tbody>
+            </table>
+        </section>
+
+        <!-- Customers Page -->
+        <section id="page-customers" class="page">
+            <h1 class="page-title">مدیریت اشخاص</h1>
+            <div class="form-container">
+                <input type="hidden" id="edit-customer-id">
+                <div class="form-group"><label>نام شخص</label><input type="text" id="c-name" required></div>
+                <div class="form-group"><label>شماره تماس</label><input type="tel" id="c-phone"></div>
+                <div class="form-group">
+                    <label>نوع شخص</label>
+                    <select id="c-type" onchange="Customers.onTypeChange()">
+                        <option value="customer">مشتری</option>
+                        <option value="supplier">فروشنده</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="balance-label">بدهی مشتری</label>
+                    <input type="number" id="c-balance" value="0">
+                </div>
+                <div class="form-group"><label>آدرس</label><input type="text" id="c-address"></div>
+                <button id="btn-save-customer" class="btn btn-primary">ذخیره مشتری</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>نام</th>
+                        <th>تماس</th>
+                        <th>آدرس</th>
+                        <th>نوع شخص</th>
+                        <th>بدهی</th>
+                    </tr>
+                </thead>
+                <tbody id="customers-tbody"></tbody>
+            </table>
+        </section>
+
+        <!-- Create Invoice Page -->
+        <section id="page-create-invoice" class="page">
+            <h1 class="page-title">صدور فاکتور جدید</h1>
+            <div class="invoice-form">
+                <div class="form-row">
+                    <div class="form-group"><label>مشتری</label><select id="inv-customer" class="full-width"></select>
+                    </div>
+                    <div class="form-group"><label>تاریخ</label><input type="text" id="inv-date" autocomplete="off"
+                            class="full-width">
+                    </div>
+                </div>
+
+                <div class="invoice-items-header">
+                    <h3>اقلام فاکتور</h3>
+                    <button id="btn-add-row" class="btn btn-success">+ افزودن ردیف</button>
+                </div>
+
+                <table class="data-table" id="invoice-items-table">
+                    <thead>
+                        <tr>
+                            <th>محصول</th>
+                            <th>متراژ/تعداد</th>
+                            <th>قیمت واحد</th>
+                            <th>مبلغ ردیف</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-items-tbody"></tbody>
+                </table>
+
+                <div class="invoice-calculations">
+                    <div class="calc-row"><span>جمع کل اقلام:</span><span id="calc-subtotal">0.00</span></div>
+                    <div class="calc-row"><span>تخفیف (تومان):</span><input type="number" id="calc-discount" value="0"
+                            min="0" step="1000"></div>
+                    <div class="calc-row"><span>مبلغ مشمول مالیات:</span><span id="calc-taxable">0.00</span></div>
+                    <div class="calc-row final-total"><span>مبلغ نهایی فاکتور:</span><span id="calc-final">0.00</span>
+                    </div>
+                </div>
+
+                <button id="btn-submit-invoice" class="btn btn-primary btn-lg">ثبت فاکتور و به‌روزرسانی انبار</button>
+            </div>
+        </section>
+
+        <section id="page-profits" class="page">
+
+            <h1 class="page-title">
+                مدیریت سود
+            </h1>
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>تاریخ</th>
+
+                        <th>مشتری</th>
+
+                        <th>شماره فاکتور</th>
+
+                        <th>هزینه</th>
+
+                        <th>فروش</th>
+
+                        <th>سود</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="profits-tbody">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <!-- Invoices List Page -->
+        <section id="page-invoices" class="page">
+            <h1 class="page-title">لیست فاکتورها و تسویه حساب</h1>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>شماره فاکتور</th>
+                        <th>مشتری</th>
+                        <th>تاریخ</th>
+                        <th>مبلغ نهایی</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="invoices-tbody"></tbody>
+            </table>
+        </section>
+        <!-- Workers Page -->
+        <section id="page-workers" class="page">
+            <h1 class="page-title">مدیریت کارگران</h1>
+            <div class="form-container">
+                <input type="hidden" id="edit-worker-id">
+                <div class="form-group"><label>نام و نام خانوادگی</label><input type="text" id="w-name"></div>
+                <div class="form-group"><label>موقعیت (نقش)</label><input type="text" id="w-role"
+                        placeholder="مثلا: اپراتور تولید"></div>
+                <div class="form-group"><label>حقوق پایه (تومان)</label><input type="number" id="w-salary" min="0">
+                </div>
+                <button id="btn-save-worker" class="btn btn-primary">ذخیره کارگر</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>نام</th>
+                        <th>نقش</th>
+                        <th>حقوق پایه</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="workers-tbody"></tbody>
+            </table>
+        </section>
+
+        <!-- Salaries Page -->
+        <section id="page-salaries" class="page">
+            <h1 class="page-title">ثبت حقوق و دستمزد</h1>
+            <div class="form-container" style="flex-direction: column; gap: 15px;">
+                <div class="form-row">
+                    <div class="form-group"><label>کارگر</label><select id="sal-worker" class="full-width"></select>
+                    </div>
+                    <div class="form-group"><label>سال</label><input type="number" id="sal-year" min="1400"
+                            value="1403"></div>
+                    <div class="form-group"><label>ماه</label>
+                        <select id="sal-month" class="full-width">
+                            <option value="01">فروردین</option>
+                            <option value="02">اردیبهشت</option>
+                            <option value="03">خرداد</option>
+                            <option value="04">تیر</option>
+                            <option value="05">مرداد</option>
+                            <option value="06">شهریور</option>
+                            <option value="07">مهر</option>
+                            <option value="08">آبان</option>
+                            <option value="09">آذر</option>
+                            <option value="10">دی</option>
+                            <option value="11">بهمن</option>
+                            <option value="12">اسفند</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>حقوق پایه</label><input type="number" id="sal-base" min="0"
+                            oninput="Salaries.calcNet()"></div>
+                    <div class="form-group"><label>اضافه کاری</label><input type="number" id="sal-overtime" min="0"
+                            value="0" oninput="Salaries.calcNet()"></div>
+                    <div class="form-group"><label>پاداش</label><input type="number" id="sal-bonus" min="0" value="0"
+                            oninput="Salaries.calcNet()"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>کسورات (جریمه/وام و ...)</label><input type="number"
+                            id="sal-deduction" min="0" value="0" oninput="Salaries.calcNet()"></div>
+                    <div class="form-group"><label>بیمه</label><input type="number" id="sal-insurance" min="0" value="0"
+                            oninput="Salaries.calcNet()"></div>
+                    <div class="form-group"><label>مالیات</label><input type="number" id="sal-tax" min="0" value="0"
+                            oninput="Salaries.calcNet()"></div>
+                </div>
+                <div style="align-self: flex-end; font-size: 18px; font-weight: bold; color: var(--primary);">
+                    پرداختی خالص: <span id="sal-net">0.00</span> تومان
+                </div>
+                <button id="btn-save-salary" class="btn btn-primary" style="align-self: flex-start;">تایید و ثبت فیش
+                    حقوقی</button>
+            </div>
+
+            <h2 style="margin-top: 30px; margin-bottom: 15px;">سابقه پرداخت‌ها</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>کارگر</th>
+                        <th>دوره</th>
+                        <th>پایه</th>
+                        <th>اضافه کاری</th>
+                        <th>کسورات</th>
+                        <th>خالص پرداختی</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="salaries-tbody"></tbody>
+            </table>
+        </section>
+
+
+
+        <section id="page-purchases" class="page">
+
+            <h1 class="page-title">
+                ثبت خرید کالا
+            </h1>
+
+            <div class="card">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>فروشنده</label>
+
+                        <select id="purchase-supplier"></select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>کالا</label>
+
+                        <input type="text" id="purchase-product">
+
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>واحد</label>
+
+                        <input type="text" id="purchase-unit">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>تعداد</label>
+
+                        <input type="number" id="purchase-count" value="1">
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>قیمت واحد</label>
+
+                        <input type="number" id="purchase-price">
+
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>هزینه کل</label>
+
+                        <input id="purchase-total" readonly>
+
+                    </div>
+
+                </div>
+
+                <button class="btn btn-success" id="btn-save-purchase">
+
+                    ثبت خرید
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section id="page-purchase-history" class="page">
+
+            <h1 class="page-title">
+
+                سابقه خرید
+
+            </h1>
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>تاریخ</th>
+
+                        <th>فروشنده</th>
+
+                        <th>کالا</th>
+
+                        <th>تعداد</th>
+
+                        <th>قیمت واحد</th>
+
+                        <th>مبلغ کل</th>
+
+                        <th>تسویه</th>
+
+                        <th>مانده</th>
+
+                        <th>عملیات</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="purchase-history-tbody">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+        <!-- Checks Page -->
+        <section id="page-checks" class="page">
+            <h1 class="page-title">مدیریت چک‌ها (دریافتی و پرداختی)</h1>
+            <div class="form-container">
+                <input type="hidden" id="edit-check-id">
+                <div class="form-group"><label>شخص</label><select id="ch-customer" class="full-width"></select></div>
+                <div class="form-group">
+
+                    <label>مربوط به فاکتور</label>
+
+                    <select id="check-invoice">
+
+                        <option value="">انتخاب فاکتور...</option>
+
+                    </select>
+
+                </div>
+                <div class="form-group"><label>نوع چک</label>
+                    <select id="ch-type">
+                        <option value="دریافتی">دریافتی از مشتری</option>
+                        <option value="پرداختی">پرداختی به تامین‌کننده</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>بانک</label><input type="text" id="ch-bank" placeholder="مثلا: ملت">
+                </div>
+                <div class="form-group"><label>شماره چک</label><input type="text" id="ch-number"></div>
+                <div class="form-group">
+                    <label>بابت</label>
+                    <input type="text" id="ch-reason" placeholder="مثلاً خرید کابل، پیش پرداخت، تسویه فاکتور ...">
+                </div>
+                <div class="form-group"><label>تاریخ سررسید</label><input type="text" id="ch-due-date"
+                        autocomplete="off"></div>
+                <div class="form-group"><label>مبلغ چک (تومان)</label><input type="number" id="ch-amount" min="0"></div>
+                <div class="form-group"><label>وضعیت</label>
+                    <select id="ch-status">
+                        <option value="وصول نشده">وصول نشده</option>
+                        <option value="وصول شده">وصول شده</option>
+                        <option value="برگشت خورده">برگشت خورده</option>
+                    </select>
+                </div>
+                <button id="btn-save-check" class="btn btn-primary">ذخیره چک</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>شماره چک</th>
+                        <th>شخص</th>
+                        <th>بانک</th>
+                        <th>نوع</th>
+                        <th>سررسید</th>
+                        <th>بابت</th>
+                        <th>بدهکار</th>
+                        <th>بستانکار</th>
+                        <th>مانده</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody id="checks-tbody"></tbody>
+            </table>
+        </section>
+
+        <section id="page-expenses" class="page">
+
+            <h1 class="page-title">مدیریت هزینه‌ها</h1>
+
+            <div class="form-container">
+
+                <input type="hidden" id="edit-expense-id">
+
+                <div class="form-group">
+                    <label>نوع هزینه</label>
+
+                    <select id="exp-category">
+
+                        <option value="برق">برق</option>
+
+                        <option value="آب">آب</option>
+
+                        <option value="گاز">گاز</option>
+
+                        <option value="حمل و نقل">حمل و نقل</option>
+
+                        <option value="حقوق">حقوق</option>
+
+                        <option value="اجاره">اجاره</option>
+
+                        <option value="مواد مصرفی">مواد مصرفی</option>
+
+                        <option value="تبلیغات">تبلیغات</option>
+
+                        <option value="متفرقه">متفرقه</option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>مبلغ</label>
+
+                    <input type="number" id="exp-amount" min="0">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>تاریخ</label>
+
+                    <input type="text" id="exp-date">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>توضیحات</label>
+
+                    <textarea id="exp-desc"></textarea>
+
+                </div>
+
+                <button id="btn-save-expense" class="btn btn-primary">
+
+                    ثبت هزینه
+
+                </button>
+
+            </div>
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>تاریخ</th>
+
+                        <th>نوع</th>
+
+                        <th>مبلغ</th>
+
+                        <th>توضیح</th>
+
+                        <th>عملیات</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="expenses-tbody"></tbody>
+
+            </table>
+
+        </section>
+
+
+        <!-- Reports Page -->
+        <section id="page-reports" class="page">
+
+            <h1 class="page-title">
+                گزارشات مالی
+            </h1>
+
+            <div class="reports-container">
+
+                <!-- گزارش ماهانه -->
+
+                <div class="card">
+
+                    <h2>گزارش ماهانه</h2>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label>سال</label>
+
+                            <select id="report-month-year"></select>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label>ماه</label>
+
+                            <select id="report-month">
+
+                                <option value="1">فروردین</option>
+                                <option value="2">اردیبهشت</option>
+                                <option value="3">خرداد</option>
+                                <option value="4">تیر</option>
+                                <option value="5">مرداد</option>
+                                <option value="6">شهریور</option>
+                                <option value="7">مهر</option>
+                                <option value="8">آبان</option>
+                                <option value="9">آذر</option>
+                                <option value="10">دی</option>
+                                <option value="11">بهمن</option>
+                                <option value="12">اسفند</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <button class="btn btn-primary" id="btn-show-month-report">
+
+                        نمایش گزارش ماه
+
+                    </button>
+
+                    <div id="monthly-report-result" class="cards-grid" style="margin-top:25px;">
+
+                    </div>
+
+                </div>
+
+                <br>
+
+                <!-- گزارش سالانه -->
+
+                <div class="card">
+
+                    <h2>گزارش سالانه</h2>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label>سال</label>
+
+                            <select id="report-year"></select>
+
+                        </div>
+
+                    </div>
+
+                    <button class="btn btn-primary" id="btn-show-year-report">
+
+                        نمایش گزارش سال
+
+                    </button>
+
+                    <div id="yearly-report-result" class="cards-grid" style="margin-top:25px;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section id="page-ledger" class="page">
+
+            <h1 class="page-title">
+                حساب معین
+            </h1>
+
+            <div class="card ledger-container">
+
+                <div class="ledger-top">
+
+                    <div class="form-group ledger-person-box">
+
+                        <label>
+                            انتخاب شخص
+                        </label>
+
+                        <select id="ledger-person">
+                            <option value="">
+                                انتخاب شخص...
+                            </option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div id="ledger-summary" class="ledger-summary" style="display:none;">
+
+                    <div class="ledger-summary-header">
+
+                        <div>
+
+                            <span class="ledger-label">
+
+                                نام شخص
+
+                            </span>
+
+                            <span id="ledger-person-name"></span>
+
+                        </div>
+
+                        <div>
+
+                            <span class="ledger-label">
+
+                                نوع
+
+                            </span>
+
+                            <span id="ledger-person-type"></span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="ledger-summary-grid">
+
+                        <div class="ledger-item">
+
+                            <span id="ledger-title-1"></span>
+
+                            <strong id="ledger-value-1">0</strong>
+
+                        </div>
+
+                        <div class="ledger-item">
+
+                            <span id="ledger-title-2"></span>
+
+                            <strong id="ledger-value-2">0</strong>
+
+                        </div>
+
+                        <div class="ledger-item">
+
+                            <span id="ledger-title-3"></span>
+
+                            <strong id="ledger-value-3">0</strong>
+
+                        </div>
+
+                        <div class="ledger-item">
+
+                            <span id="ledger-title-4"></span>
+
+                            <strong id="ledger-value-4">0</strong>
+
+                        </div>
+
+                        <div class="ledger-item ledger-remain">
+
+                            <span id="ledger-title-5"></span>
+
+                            <strong id="ledger-value-5">0</strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="ledger-table-box" class="ledger-table-box" style="display:none;">
+
+                    <table class="ledger-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th width="120">تاریخ</th>
+
+                                <th width="170">نوع عملیات</th>
+
+                                <th>شرح عملیات</th>
+
+                                <th width="140">مبلغ</th>
+
+                                <th width="220">اطلاعات چک</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="ledger-history-tbody">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Backup Page -->
+
+<section id="page-backup" class="page">
+    <h1 class="page-title">بک‌آپ و بازیابی اطلاعات</h1>
+
+    <div class="card">
+        <h2>💾 نسخه پشتیبان اطلاعات</h2>
+
+        <p>
+            از اطلاعات رامکو یک نسخه کامل تهیه کن تا در صورت نیاز،
+            بتوانی آن‌ها را دوباره بازیابی کنی. این نسخه شامل تمام
+            داده‌های ذخیره‌شده در مرورگر است.
+        </p>
+
+        <button id="btn-backup-download" class="btn btn-primary">
+            دانلود نسخه پشتیبان
+        </button>
+
+        <p>
+            رامکو در اولین ورود هر روز، به‌صورت خودکار یک نسخه پشتیبان
+            از اطلاعات فعلی تهیه و دانلود می‌کند.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>📂 بازیابی نسخه پشتیبان</h2>
+
+        <p>
+            فایل JSON یکی از نسخه‌های پشتیبان قبلی را انتخاب کن تا
+            اطلاعات ذخیره‌شده در آن به رامکو بازگردانده شود.
+        </p>
+
+        <div class="form-group">
+            <label for="backup-file">فایل نسخه پشتیبان</label>
+            <input
+                type="file"
+                id="backup-file"
+                accept=".json,application/json"
+            >
+        </div>
+
+        <button id="btn-backup-restore" class="btn btn-primary">
+            بازیابی اطلاعات
+        </button>
+
+        <p class="backup-warning">
+            ⚠️ توجه: با تأیید بازیابی، اطلاعات فعلی با اطلاعات فایل
+            انتخاب‌شده جایگزین می‌شوند. پیش از ادامه، از اطلاعات فعلی
+            یک نسخه پشتیبان تهیه کن.
+        </p>
+    </div>
+</section>
+
+    </main>
+
+    <!-- Hidden PDF Template -->
+    <div id="pdf-template"
+        style="position: absolute; left: -9999px; top: 0; width: 1100px; background: #fff; padding: 40px; font-family: Vazirmatn, sans-serif; direction: rtl; color: #000;">
+        <div style="text-align: center; border-bottom: 3px double #000; padding-bottom: 15px; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 28px;">کارگاه تولید کابل رامکو</h1>
+            <h2 style="margin: 5px 0; color: #555;">Ramco Cable Workshop</h2>
+            <p style="margin: 5px 0; font-size: 14px;">آدرس: تهران، خیابان صنعت، کوچه اول، پلاک 12 | تلفن: 021-12345678
+            </p>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px;">
+            <div><strong>مشتری:</strong> <span id="pdf-customer-name"></span></div>
+            <div><strong>تاریخ:</strong> <span id="pdf-date"></span></div>
+            <div><strong>شماره فاکتور:</strong> <span id="pdf-inv-id"></span></div>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <thead>
+                <tr style="background: #f0f0f0; border: 1px solid #000;">
+                    <th style="border: 1px solid #000; padding: 8px;">ردیف</th>
+                    <th style="border: 1px solid #000; padding: 8px;">شرح کالا</th>
+                    <th style="border: 1px solid #000; padding: 8px;">واحد</th>
+                    <th style="border: 1px solid #000; padding: 8px;">تعداد/متراژ</th>
+                    <th style="border: 1px solid #000; padding: 8px;">قیمت واحد</th>
+                    <th style="border: 1px solid #000; padding: 8px;">مبلغ</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-items-body"></tbody>
+        </table>
+        <div style="width: 50%; margin-right: auto; margin-top: 20px; font-size: 14px;">
+            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dotted #ccc;">
+                <span>جمع کل:</span><span id="pdf-subtotal"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dotted #ccc;">
+                <span>تخفیف:</span><span id="pdf-discount"></span>
+            </div>
+            <div
+                style="display: flex; justify-content: space-between; padding: 10px 0; font-weight: bold; font-size: 18px; background: #f9f9f9; padding-right: 10px; margin-top: 10px;">
+                <span>مبلغ نهایی:</span><span id="pdf-final"></span>
+            </div>
+
+
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #ccc;">
+                <span>مانده قبلی:</span>
+                <span id="pdf-prev-balance">0</span>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dotted #ccc;">
+                <span>این فاکتور:</span>
+                <span id="pdf-current-total">0</span>
+            </div>
+
+            <div style="
+            display:flex;
+            justify-content:space-between;
+padding:10px 0;
+font-weight:bold;
+font-size:18px;
+background:#e8fff1;
+margin-top:10px;
+padding-right:10px;">
+                <span>بدهی نهایی:</span>
+                <span id="pdf-new-balance">0</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal for Payment -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <h3>ثبت پرداختی برای فاکتور شماره: <span id="modal-inv-id"></span></h3>
+            <div class="form-group"><label>مبلغ پرداختی (تومان)</label><input type="number" id="pay-amount" min="0"
+                    step="1000"></div>
+            <button id="btn-confirm-pay" class="btn btn-primary">تایید و کسر از بدهی</button>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
